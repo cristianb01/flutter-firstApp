@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import './question.dart';
+import 'package:new_project/result.dart';
+
+import 'quiz_container.dart';
 
 class MyApp extends StatefulWidget {
   @override
@@ -9,15 +11,53 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  _answerQuestion() {
+  _answerQuestion(int score) {
+    _totalScore = _totalScore + score;
+
+    setState(() {
+      this._questionIndex++;
+    });
     print('Question answered!');
   }
 
-  int _questionIndex = 0;
+  void _resetQuiz() {
+    setState(() {
+      _questionIndex = 0;
+      _totalScore = 0;
+    });
+  }
 
-  List<String> questions = [
-    'Whats your favorite color?',
-    'Whats your favorite animal?'
+  int _questionIndex = 0;
+  int _totalScore = 0;
+
+  static const List<Map<String, Object>> _questionsList = [
+    {
+      'questionText': 'Whats your favorite color?',
+      'answers': [
+        {'text': 'Black', 'score': 5},
+        {'text': 'Red', 'score': 3},
+        {'text': 'Green', 'score': 2},
+        {'text': 'White', 'score': 1}
+      ]
+    },
+    {
+      'questionText': 'Whats your favorite animal?',
+      'answers': [
+        {'text': 'Rabbit', 'score': 3},
+        {'text': 'Snake', 'score': 5},
+        {'text': 'Elephant', 'score': 3},
+        {'text': 'Lion', 'score': 4}
+      ]
+    },
+    {
+      'questionText': 'Whats your favorite food?',
+      'answers': [
+        {'text': 'Spaghetti', 'score': 2},
+        {'text': 'Meat', 'score': 3},
+        {'text': 'Roasted chicken', 'score': 4},
+        {'text': 'Fish', 'score': 5}
+      ]
+    },
   ];
 
   @override
@@ -25,29 +65,13 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
           appBar: AppBar(title: Text('My first app')),
-          body: Column(
-            children: <Widget>[
-              Question(this.questions[this._questionIndex]),
-              RaisedButton(
-                child: Text('Answer 1'),
-                onPressed: _answerQuestion,
-              ),
-              RaisedButton(
-                child: Text('Answer 2'),
-                onPressed: () {
-                  print('Answer 2');
-                },
-              ),
-              RaisedButton(
-                child: Text('Answer 3'),
-                onPressed: () {
-                  setState(() {
-                    this._questionIndex++;
-                  });
-                },
-              ),
-            ],
-          )),
+          body: _questionIndex < _questionsList.length
+              ? QuizContainer(
+                  questionList: _questionsList,
+                  questionIndex: _questionIndex,
+                  answerQuestion: _answerQuestion,
+                )
+              : ResultScreen(_totalScore, _resetQuiz)),
     );
   }
 }
